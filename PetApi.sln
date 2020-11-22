@@ -1,9 +1,9 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackEndApiTemplate", "BackEndApiTemplate\BackEndApiTemplate.csproj", "{4246CDA9-04F6-4245-8D5F-88D549B4A967}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetApi", "PetApi\PetApi.csproj", "{4246CDA9-04F6-4245-8D5F-88D549B4A967}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackEndApiTemplateTest", "BackEndApiTemplateTest\BackEndApiTemplateTest.csproj", "{282B6821-B895-43A8-B8F4-C2FEDF04C30E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetApiTest", "PetApiTest\PetApiTest.csproj", "{282B6821-B895-43A8-B8F4-C2FEDF04C30E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

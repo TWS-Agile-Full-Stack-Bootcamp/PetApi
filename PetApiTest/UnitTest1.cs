@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace BackEndApiTemplateTest
+namespace PetApiTest
 {
     public class UnitTest1
     {
