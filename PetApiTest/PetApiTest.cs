@@ -138,5 +138,33 @@ namespace PetApiTest
             var actualPet = JsonConvert.DeserializeObject<Pet>(responseBody);
             Assert.Equal(500, actualPet.Price);
         }
+
+        [Fact]
+        public async Task Should_Return_Correct_Pets_When_Find_Pets_By_Type()
+        {
+            // given
+            TestServer server = new TestServer(new WebHostBuilder()
+                .UseStartup<Startup>());
+            HttpClient client = server.CreateClient();
+            await client.GetAsync("api/resetPets");
+            Pet baymaxDog = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
+            await client.PostAsync("api/addPet",
+                new StringContent(JsonConvert.SerializeObject(baymaxDog), Encoding.UTF8, "application/json"));
+            Pet oldblackCat = new Pet(name: "Old Black", type: "cat", color: "black", price: 500);
+            await client.PostAsync("api/addPet",
+                new StringContent(JsonConvert.SerializeObject(oldblackCat), Encoding.UTF8, "application/json"));
+            Pet littleflowerCat = new Pet(name: "Litte Flower", type: "cat", color: "yellow", price: 500);
+            await client.PostAsync("api/addPet",
+                new StringContent(JsonConvert.SerializeObject(littleflowerCat), Encoding.UTF8, "application/json"));
+
+            // when
+            var findPetsByTypeResponse = await client.GetAsync("api/findPetsByType?type=cat");
+
+            // then
+            findPetsByTypeResponse.EnsureSuccessStatusCode();
+            var responseBody = await findPetsByTypeResponse.Content.ReadAsStringAsync();
+            var actualPets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
+            Assert.Equal(new List<Pet>() { oldblackCat, littleflowerCat }, actualPets);
+        }
     }
 }

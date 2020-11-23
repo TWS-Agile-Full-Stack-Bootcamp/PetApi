@@ -46,6 +46,12 @@ namespace PetApi.Controllers
             currentPet.Price = pet.Price;
             return currentPet;
         }
+
+        [HttpGet("findPetsByType")]
+        public IEnumerable<Pet> FindPetsByType(string type)
+        {
+            return pets.Where(pet => pet.Type.Equals(type));
+        }
         
         [HttpGet("resetPets")]
         public void ResetPets()
