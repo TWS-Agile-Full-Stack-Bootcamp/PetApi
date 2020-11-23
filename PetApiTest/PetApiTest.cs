@@ -16,10 +16,8 @@ namespace PetApiTest
         public async Task Should_Success_When_Add_New_Pet()
         {
             // given
-            TestServer server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>());
-            HttpClient client = server.CreateClient();
-            await client.GetAsync("api/resetPets");
+            var client = GenerateHttpClient();
+            await ClearStoredData(client);
 
             Pet pet = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
             StringContent stringContent =
@@ -39,10 +37,8 @@ namespace PetApiTest
         public async Task Should_Return_All_Pets_When_Get_All_Pets()
         {
             // given
-            TestServer server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>());
-            HttpClient client = server.CreateClient();
-            await client.GetAsync("api/resetPets");
+            var client = GenerateHttpClient();
+            await ClearStoredData(client);
 
             Pet baymaxDog = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
             await client.PostAsync("api/addPet",
@@ -65,10 +61,8 @@ namespace PetApiTest
         public async Task Should_Return_Pet_Info_When_Find_Pet_By_Name_Successfully()
         {
             // given
-            TestServer server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>());
-            HttpClient client = server.CreateClient();
-            await client.GetAsync("api/resetPets");
+            var client = GenerateHttpClient();
+            await ClearStoredData(client);
 
             Pet baymaxDog = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
             await client.PostAsync("api/addPet",
@@ -92,10 +86,8 @@ namespace PetApiTest
         public async Task Should_Success_When_Remove_Pet()
         {
             // given
-            TestServer server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>());
-            HttpClient client = server.CreateClient();
-            await client.GetAsync("api/resetPets");
+            var client = GenerateHttpClient();
+            await ClearStoredData(client);
 
             Pet baymaxDog = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
             await client.PostAsync("api/addPet",
@@ -116,10 +108,9 @@ namespace PetApiTest
         public async Task Should_Modify_Price_When_Modify_Pet_Price()
         {
             // given
-            TestServer server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>());
-            HttpClient client = server.CreateClient();
-            await client.GetAsync("api/resetPets");
+            var client = GenerateHttpClient();
+            await ClearStoredData(client);
+
             Pet baymaxDog = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
             await client.PostAsync("api/addPet",
                 new StringContent(JsonConvert.SerializeObject(baymaxDog), Encoding.UTF8, "application/json"));
@@ -143,10 +134,9 @@ namespace PetApiTest
         public async Task Should_Return_Correct_Pets_When_Find_Pets_By_Type()
         {
             // given
-            TestServer server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>());
-            HttpClient client = server.CreateClient();
-            await client.GetAsync("api/resetPets");
+            var client = GenerateHttpClient();
+            await ClearStoredData(client);
+
             Pet baymaxDog = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
             await client.PostAsync("api/addPet",
                 new StringContent(JsonConvert.SerializeObject(baymaxDog), Encoding.UTF8, "application/json"));
@@ -165,6 +155,19 @@ namespace PetApiTest
             var responseBody = await findPetsByTypeResponse.Content.ReadAsStringAsync();
             var actualPets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
             Assert.Equal(new List<Pet>() { oldblackCat, littleflowerCat }, actualPets);
+        }
+
+        private static async Task ClearStoredData(HttpClient client)
+        {
+            await client.GetAsync("api/resetPets");
+        }
+
+        private static HttpClient GenerateHttpClient()
+        {
+            TestServer server = new TestServer(new WebHostBuilder()
+                .UseStartup<Startup>());
+            HttpClient client = server.CreateClient();
+            return client;
         }
     }
 }
