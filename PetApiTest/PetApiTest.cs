@@ -86,5 +86,30 @@ namespace PetApiTest
             var actualPet = JsonConvert.DeserializeObject<Pet>(responseBody);
             Assert.Equal(baymaxDog, actualPet);
         }
+
+        // removePetByName
+        [Fact]
+        public async Task Should_Success_When_Remove_Pet()
+        {
+            // given
+            TestServer server = new TestServer(new WebHostBuilder()
+                .UseStartup<Startup>());
+            HttpClient client = server.CreateClient();
+            await client.GetAsync("api/resetPets");
+
+            Pet baymaxDog = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
+            await client.PostAsync("api/addPet",
+                new StringContent(JsonConvert.SerializeObject(baymaxDog), Encoding.UTF8, "application/json"));
+
+            // when
+            var removeResponse = await client.DeleteAsync("api/removePetByName?name=Baymax");
+            var getAllResponse = await client.GetAsync("api/getAllPets");
+
+            // then
+            removeResponse.EnsureSuccessStatusCode();
+            var responseBody = await getAllResponse.Content.ReadAsStringAsync();
+            var actualPets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
+            Assert.Equal(0, actualPets.Count);
+        }
     }
 }
