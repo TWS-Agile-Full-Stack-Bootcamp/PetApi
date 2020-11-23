@@ -26,6 +26,12 @@ namespace PetApi.Controllers
             return pets;
         }
         
+        [HttpGet("findPetByName")]
+        public Pet FindPetByName(string name)
+        {
+            return pets.First(pet => pet.Name.Equals(name));
+        }
+        
         [HttpGet("resetPets")]
         public void ResetPets()
         {

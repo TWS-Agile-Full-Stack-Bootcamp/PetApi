@@ -60,5 +60,31 @@ namespace PetApiTest
             var actualPets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
             Assert.Equal(new List<Pet>() { baymaxDog, oldblackCat }, actualPets);
         }
+
+        [Fact]
+        public async Task Should_Return_Pet_Info_When_Find_Pet_By_Name_Successfully()
+        {
+            // given
+            TestServer server = new TestServer(new WebHostBuilder()
+                .UseStartup<Startup>());
+            HttpClient client = server.CreateClient();
+            await client.GetAsync("api/resetPets");
+
+            Pet baymaxDog = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
+            await client.PostAsync("api/addPet",
+                new StringContent(JsonConvert.SerializeObject(baymaxDog), Encoding.UTF8, "application/json"));
+            Pet oldblackCat = new Pet(name: "Old Black", type: "cat", color: "black", price: 500);
+            await client.PostAsync("api/addPet",
+                new StringContent(JsonConvert.SerializeObject(oldblackCat), Encoding.UTF8, "application/json"));
+
+            // when
+            var response = await client.GetAsync("api/findPetByName?name=Baymax");
+
+            // then
+            response.EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var actualPet = JsonConvert.DeserializeObject<Pet>(responseBody);
+            Assert.Equal(baymaxDog, actualPet);
+        }
     }
 }
