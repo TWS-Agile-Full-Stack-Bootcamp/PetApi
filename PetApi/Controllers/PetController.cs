@@ -53,6 +53,12 @@ namespace PetApi.Controllers
             return pets.Where(pet => pet.Type.Equals(type));
         }
         
+        [HttpGet("findPetsByPriceRange")]
+        public IEnumerable<Pet> FindPetsByPriceRange(int minPrice, int maxPrice)
+        {
+            return pets.Where(pet => pet.Price >= minPrice && pet.Price <= maxPrice);
+        }
+        
         [HttpGet("resetPets")]
         public void ResetPets()
         {

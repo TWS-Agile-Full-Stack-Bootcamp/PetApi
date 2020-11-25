@@ -143,12 +143,39 @@ namespace PetApiTest
             Pet oldblackCat = new Pet(name: "Old Black", type: "cat", color: "black", price: 500);
             await client.PostAsync("api/addPet",
                 new StringContent(JsonConvert.SerializeObject(oldblackCat), Encoding.UTF8, "application/json"));
-            Pet littleflowerCat = new Pet(name: "Litte Flower", type: "cat", color: "yellow", price: 500);
+            Pet littleflowerCat = new Pet(name: "Litte Flower", type: "cat", color: "yellow", price: 200);
             await client.PostAsync("api/addPet",
                 new StringContent(JsonConvert.SerializeObject(littleflowerCat), Encoding.UTF8, "application/json"));
 
             // when
             var findPetsByTypeResponse = await client.GetAsync("api/findPetsByType?type=cat");
+
+            // then
+            findPetsByTypeResponse.EnsureSuccessStatusCode();
+            var responseBody = await findPetsByTypeResponse.Content.ReadAsStringAsync();
+            var actualPets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
+            Assert.Equal(new List<Pet>() { oldblackCat, littleflowerCat }, actualPets);
+        }
+
+        [Fact]
+        public async Task Should_Return_Correct_Pets_When_Find_Pets_By_Price_Range()
+        {
+            // given
+            var client = GenerateHttpClient();
+            await ClearStoredData(client);
+
+            Pet baymaxDog = new Pet(name: "Baymax", type: "dog", color: "white", price: 1000);
+            await client.PostAsync("api/addPet",
+                new StringContent(JsonConvert.SerializeObject(baymaxDog), Encoding.UTF8, "application/json"));
+            Pet oldblackCat = new Pet(name: "Old Black", type: "cat", color: "black", price: 500);
+            await client.PostAsync("api/addPet",
+                new StringContent(JsonConvert.SerializeObject(oldblackCat), Encoding.UTF8, "application/json"));
+            Pet littleflowerCat = new Pet(name: "Litte Flower", type: "cat", color: "yellow", price: 200);
+            await client.PostAsync("api/addPet",
+                new StringContent(JsonConvert.SerializeObject(littleflowerCat), Encoding.UTF8, "application/json"));
+
+            // when
+            var findPetsByTypeResponse = await client.GetAsync("api/findPetsByPriceRange?minPrice=200&maxPrice=500");
 
             // then
             findPetsByTypeResponse.EnsureSuccessStatusCode();
